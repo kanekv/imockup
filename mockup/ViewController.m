@@ -23,7 +23,6 @@
     self.scrollDelegate = [[MainScroll alloc] init];
     self.mainScroll.delegate = self.scrollDelegate;
     self.tableSources = [[NSMutableArray alloc] init];
-    self.viewOptions.hidden = YES;
     
     NSInteger numberOfViews = 3;
     NSArray *labels = [[NSArray alloc] initWithObjects:@"Albums",@"Photos",@"Tweets", nil];
@@ -54,12 +53,13 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    self.viewOptions.hidden = YES;
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
         NSLog(@"Landscape");
-        float height = self.view.frame.size.width - 10 - 44;
-        float width = self.view.frame.size.width + 20;
+        float height = self.view.frame.size.height - 10 - 44;
+        float width = self.view.frame.size.height + 20;
+        NSLog(@"frame width %f", width);
         NSLog(@"width %f", width / 1.3 * 3 + 20);
+        NSLog(@"height %f", height);
         self.mainScroll.contentSize = CGSizeMake(width / 1.3 * 3 + 20, height);
         NSInteger subviewsCount = [self.tableSources count];
         while (subviewsCount--) {
@@ -83,29 +83,12 @@
 
 -(IBAction) optionsButtonClicked:(id) sender
 {
-    CGRect destination = self.viewOptions.frame;
-    if (destination.origin.x == 0) {
-        destination.origin.x = -200;
-    } else {
-        destination.origin.x = 0;
-    }
-    if (self.viewOptions.hidden == YES) {
-        destination.origin.x = 0;
-        CGRect frame = self.viewOptions.frame;
-        frame.origin.x = -200;
-        self.viewOptions.frame = frame;
-    }
-    self.viewOptions.hidden = NO;
+    [self.sidePanelController showLeftPanelAnimated:YES];
+}
 
-    [UIView animateWithDuration:0.25 animations:^{
-        self.viewOptions.frame = destination;
-    } completion:^(BOOL finished) {
-        self.viewOptions.userInteractionEnabled = !(destination.origin.x > 0);
-        if (destination.origin.x < 0) {
-            self.viewOptions.hidden = YES;
-        }
-    }];
-    
+-(IBAction) topRightButtonClicked:(id) sender
+{
+    [self.sidePanelController showRightPanelAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning

@@ -15,11 +15,8 @@
     //ensure that the end of scroll is fired.
     [self performSelector:@selector(scrollViewDidEndScrollingAnimation:) withObject:scrollView afterDelay:0.03];
     if (scrollView.contentOffset.x < 0) {
-        NSLog(@"offset %f", scrollView.contentOffset.x);
-        NSLog(@"bouncing left");
         self.direction = 0;
     }else if (scrollView.contentOffset.x > (scrollView.contentSize.width - scrollView.frame.size.width)) {
-        NSLog(@"bouncing right");
         self.direction = 1;
     }
 }

@@ -11,13 +11,15 @@
 #import "MainTable.h"
 #import "MainScroll.h"
 #import "LeftMenuViewController.h"
+#import "JASidePanelController.h"
+#import "UIViewController+JASidePanel.h"
 
 @interface ViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
     @property (nonatomic, strong) IBOutlet UIScrollView *mainScroll;
-    @property (nonatomic, strong) IBOutlet UIView *viewOptions;
 
     @property NSMutableArray *tableSources;
     @property (nonatomic, strong) MainScroll *scrollDelegate;
 
     -(IBAction) optionsButtonClicked:(id) sender;
+    -(IBAction) topRightButtonClicked:(id) sender;
 @end
