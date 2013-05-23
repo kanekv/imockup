@@ -12,7 +12,7 @@
 @interface MainTable : NSObject <UITableViewDelegate, UITableViewDataSource>
     @property(strong, atomic) UITableView *table;
     @property(strong, atomic) UIView *rootView;
-    @property(strong, atomic) NSArray *data;
+    @property(strong, atomic) NSMutableArray *data;
     @property(strong, atomic) UIActivityIndicatorView *activityIndicator;
 
     - (id)initWithTable:(UITableView *)table rootView:(UIView *)rootView;

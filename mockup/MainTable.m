@@ -7,8 +7,15 @@
 //
 
 #import "MainTable.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation MainTable
+{
+    UIView *draggedView;
+    NSIndexPath *indexPath;
+    CGPoint startDragPoint;
+    UITableViewCell *draggedEl;
+}
 
 - (id)initWithTable:(UITableView *)table rootView:(UIView *)rootView
 {
@@ -30,13 +37,78 @@
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         [self.activityIndicator stopAnimating];
-        self.data = JSON[@"albums"][@"data"];
+        self.data = [NSMutableArray arrayWithArray:JSON[@"albums"][@"data"]];
         [self.table reloadData];
     } failure:nil];
     
     [operation start];
+    
+    // Drag recognition
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    [self.table addGestureRecognizer:longPress];
+    
     return self;
 }
+
+- (IBAction)longPress:(UIGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateBegan)
+    {
+        // figure out which item in the table was selected
+        indexPath = [(UITableView *)sender.view indexPathForRowAtPoint:[sender locationInView:sender.view]];
+        if (!indexPath)
+        {
+            NSLog(@"No drag!");
+            return;
+        }
+        ((UITableView *)sender.view).scrollEnabled = NO;
+        
+        draggedEl = [(UITableView *)sender.view cellForRowAtIndexPath:indexPath];
+        
+        UIGraphicsBeginImageContext(draggedEl.contentView.bounds.size);
+        [draggedEl.contentView.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        
+        UIImageView *iv = [[UIImageView alloc] initWithImage:img];
+        draggedView = [[UIView alloc]initWithFrame:iv.frame];
+        [draggedView addSubview:iv];
+        [draggedView setBackgroundColor:[UIColor blueColor]];
+        CGPoint p = [sender locationInView:self.rootView];
+        p.x += (self.rootView).frame.origin.x;
+        [draggedView setCenter:p];
+        startDragPoint = p;
+        
+        [self.data removeObjectAtIndex:indexPath.row];
+        [self.table deleteRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationFade];
+        // now add the item to the view
+        [self.rootView.superview addSubview:draggedView];
+    } else if (sender.state == UIGestureRecognizerStateChanged) {
+        // we dragged it, so let's update the coordinates of the dragged view
+        UIView *splitView = self.rootView;
+        CGPoint point = [sender locationInView:splitView];
+//        CGPoint pointInWindowCoords = [self.rootView.superview convertPoint:point toView:nil];
+//        NSLog(@"%f", pointInWindowCoords.x);
+//        CGPoint offset = ((UIScrollView *)self.rootView.superview).contentOffset;
+//        if (pointInWindowCoords.x > 280 && offset.x <= ((UIScrollView *)self.rootView.superview).contentSize.width - self.rootView.superview.frame.size.width) {
+//            offset.x += 5;
+//        } else if (pointInWindowCoords.x < 40 && offset.x >= 5) {
+//            offset.x -= 5;
+//        }
+//        ((UIScrollView *)self.rootView.superview).contentOffset = offset;
+        point.x += (self.rootView).frame.origin.x;
+        draggedView.center = point;
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        [UIView animateWithDuration:0.3 animations:^{
+            draggedView.center = startDragPoint;
+        } completion:^(BOOL finished) {
+            [draggedView removeFromSuperview];
+            [self.data insertObject:[NSDictionary dictionaryWithObject:draggedEl.textLabel.text forKey:@"name"] atIndex:indexPath.row];
+            [self.table insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }];
+    }
+}
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -74,8 +146,8 @@
     return height;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-}
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//}
 
 @end

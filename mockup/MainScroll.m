@@ -23,9 +23,9 @@
 
 -(void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-    NSLog(@"bouncing finished %i", self.direction);
-    NSLog(@"max width %f", (scrollView.contentSize.width - scrollView.frame.size.width));    
-    NSLog(@"offset %f", scrollView.contentOffset.x);
+//    NSLog(@"bouncing finished %i", self.direction);
+//    NSLog(@"max width %f", (scrollView.contentSize.width - scrollView.frame.size.width));    
+//    NSLog(@"offset %f", scrollView.contentOffset.x);
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
 }
 

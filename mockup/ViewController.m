@@ -40,6 +40,7 @@
         UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 30, self.view.frame.size.width / 1.3, self.view.frame.size.height - 10 - 44) style:UITableViewStyleGrouped];
 
         [awesomeView addSubview:tableView];
+        
         MainTable *table = [[MainTable alloc] initWithTable:tableView rootView:awesomeView];
         [self.tableSources addObject:table];
         tableView.dataSource = table;
@@ -89,6 +90,19 @@
 -(IBAction) topRightButtonClicked:(id) sender
 {
     [self.sidePanelController showRightPanelAnimated:YES];
+}
+
+-(IBAction) topLockButtonClicked:(id) sender
+{
+    if (((UITabBarItem *)sender).tag == 0) {
+        ((UITabBarItem *)sender).tag = 1;
+        ((UITabBarItem *)sender).image = [UIImage imageNamed:@"locked.png"];
+        self.mainScroll.scrollEnabled = NO;
+    } else {
+        ((UITabBarItem *)sender).tag = 0;
+        ((UITabBarItem *)sender).image = [UIImage imageNamed:@"unlocked.png"];
+        self.mainScroll.scrollEnabled = YES;
+    }
 }
 
 - (void)didReceiveMemoryWarning

@@ -22,4 +22,5 @@
 
     -(IBAction) optionsButtonClicked:(id) sender;
     -(IBAction) topRightButtonClicked:(id) sender;
+    -(IBAction) topLockButtonClicked:(id) sender;
 @end
